@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body class="p-4">
+
+
+    <div class="flex lg:flex-row flex-col w-full">
+        <div class="lg:p-8 p-4 lg:w-1/2 flex flex-col gap-6">
+            <h2 class="lg:text-base text-sm font-bold">Supercharged analysis & monitoring tools</h2>
+            <h1 class="lg:text-6xl text-4xl font-bold">Search Engine Optimization Made Easy</h1>
+            <div class="flex justify-between border rounded-md mt-4 items-center">
+                <input type="url" id="url" name="url"
+                    class="lg:text-xl text-base px-4 py-4 bg-gray-50  border-gray-300 text-gray-900 text-sm rounded-l-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="https://example.com" required />
+                <button onclick="getDigest()" type="button"
+                    class="lg:text-xl text-base text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-r-lg text-sm px-4 py-4 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Analyze</button>
+            </div>
+            <p class="lg:text-lg text-base">Trusted by over 15,000 webmasters, small business owners & SEO agencies in
+                over 120 countries.</p>
+        </div>
+        <div id="text" class="lg:w-1/2 lg-p-8 p-4 text-base">
+        </div>
+
+        <script>
+
+
+            if (localStorage.getItem("permission") == null) {
+                localStorage.setItem('permission', 'false')
+            }
+
+
+            function getDigest() {
+
+                const permission = localStorage.getItem('permission')
+
+                if (permission != 'false') {
+                    window.alert("Over")
+                }
+                else {
+                    const url = document.getElementById('url').value
+                    const div = document.getElementById('text')
+                    div.textContent = "Loading..."
+
+                    fetch('/api/data', {
+                        method: 'POST', // Use POST method
+                        headers: {
+                            'Content-Type': 'application/json' // Send JSON data
+                        },
+                        body: JSON.stringify({ url: url }) // Convert JS object to JSON
+                    })
+                        .then(response => response.json()) // Parse the JSON response
+                        .then(data => {
+                            //localStorage.setItem('permission', 'false')
+                            
+                            div.innerHTML=`
+                            <div class="grid grid-cols-2 gap-4 w-full">
+                <div id="card">
+                    <h2 id="card-h">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3">
+                            <span><i class="text-green-500 bi bi-check-circle-fill"></i> ${data.domain}</span>
+                        </button>
+                    </h2>
+
+                </div>
+
+                <div id="card">
+                    <h2 id="card-h">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3">
+                            <span>${(data.ssl)?'<i class="text-green-500 bi bi-check-circle-fill"></i>':'<i class="text-red-500 bi bi-x-circle-fill"></i>'} SSL</span>
+                        </button>
+                    </h2>
+
+                </div>
+
+                <div id="accordion-collapse-1" data-accordion="collapse">
+                    <h2 id="accordion-collapse-heading-1">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+                            data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
+                            aria-controls="accordion-collapse-body-1">
+                            <span>${(data.title)?'<i class="text-green-500 bi bi-check-circle-fill"></i>':'<i class="text-red-500 bi bi-x-circle-fill"></i>'} Page Title</span>
+                        </button>
+                    </h2>
+                    <div id="accordion-collapse-body-1" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+                        <div class="p-5 border  border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                            <p>${data.title}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="accordion-collapse-2" data-accordion="collapse">
+                    <h2 id="accordion-collapse-heading-1">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+                            data-accordion-target="#accordion-collapse-body-2" aria-expanded="false"
+                            aria-controls="accordion-collapse-body-2">
+                            <span>${(data.meta_description)?'<i class="text-green-500 bi bi-check-circle-fill"></i>':'<i class="text-red-500 bi bi-x-circle-fill"></i>'} Page Description</span>
+                        </button>
+                    </h2>
+                    <div id="accordion-collapse-body-2" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+                        <div class="p-5 border  border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                            <p>${data.meta_description}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="card">
+                    <h2 id="card-h">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3">
+                            <span>${(data.favicon)?'<i class="text-green-500 bi bi-check-circle-fill"></i>':'<i class="text-red-500 bi bi-x-circle-fill"></i>'} Favicon</span>
+                        </button>
+                    </h2>
+
+                </div>
+
+
+                <div id="card">
+                    <h2 id="card-h">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3">
+                            <span>${(data.robots_txt)?'<i class="text-green-500 bi bi-check-circle-fill"></i>':'<i class="text-red-500 bi bi-x-circle-fill"></i>'} Robots.txt</span>
+                        </button>
+                    </h2>
+
+                </div>
+
+                <div id="card">
+                    <h2 id="card-h">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3">
+                            <span>${(data.sitemap_xml)?'<i class="text-green-500 bi bi-check-circle-fill"></i>':'<i class="text-red-500 bi bi-x-circle-fill"></i>'} Sitemap.xml</span>
+                        </button>
+                    </h2>
+
+                </div>
+
+                <div id="card">
+                    <h2 id="card-h">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3">
+                            <span>Words Count: ${data.words_count}</span>
+                        </button>
+                    </h2>
+
+                </div>
+
+                <div id="card">
+                    <h2 id="card-h">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3">
+                            <span>Page Load Speed: ${data.page_load_speed.toFixed(2)} S</span>
+                        </button>
+                    </h2>
+
+                </div>
+
+                <div id="card">
+                    <h2 id="card-h">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3">
+                            <span>Total Images: ${data.total_images}</span>
+                        </button>
+                    </h2>
+
+                </div>
+
+                <div id="accordion-collapse-3" data-accordion="collapse">
+                    <h2 id="accordion-collapse-heading-3">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+                            data-accordion-target="#accordion-collapse-body-3" aria-expanded="false"
+                            aria-controls="accordion-collapse-body-1">
+                            <span>Images Withpot Alt: ${data.imgWithoutAlt}</span>
+                        </button>
+                    </h2>
+                    <div id="accordion-collapse-body-3" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+                        <div class="p-5 border  border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="card">
+                    <h2 id="card-h">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3">
+                            <span>Total Links :${data.total_links}</span>
+                        </button>
+                    </h2>
+
+                </div>
+
+
+                <div id="accordion-collapse-4" data-accordion="collapse">
+                    <h2 id="accordion-collapse-heading-3">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+                            data-accordion-target="#accordion-collapse-body-4" aria-expanded="false"
+                            aria-controls="accordion-collapse-body-1">
+                            <span>Internal Links : ${data.internal_links.length}</span>
+                        </button>
+                    </h2>
+                    <div id="accordion-collapse-body-4" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+                        <div class="p-5 border  border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                            <p>Body</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="accordion-collapse-5" data-accordion="collapse">
+                    <h2 id="accordion-collapse-heading-3">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+                            data-accordion-target="#accordion-collapse-body-5" aria-expanded="false"
+                            aria-controls="accordion-collapse-body-1">
+                            <span>Exrernal Links: ${data.external_links.length}</span>
+                        </button>
+                    </h2>
+                    <div id="accordion-collapse-body-5" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+                        <div class="p-5 border  border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                            <p>Body</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="accordion-collapse-6" data-accordion="collapse">
+                    <h2 id="accordion-collapse-heading-3">
+                        <button type="button"
+                            class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border  border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+                            data-accordion-target="#accordion-collapse-body-6" aria-expanded="false"
+                            aria-controls="accordion-collapse-body-1">
+                            <span>Broken Links: ${data.broken_links.length}</span>
+                        </button>
+                    </h2>
+                    <div id="accordion-collapse-body-6" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+                        <div class="p-5 border  border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                            <p>Body</p>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>`
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error); // Handle errors
+                        });
+                }
+            }
+        </script>
+
+</body>
+
+</html>
